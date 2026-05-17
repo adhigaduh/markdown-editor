@@ -1,45 +1,22 @@
-import { useState } from 'react';
 import { useMarkdownStore } from '../store/useMarkdownStore';
 
 export default function FileBrowser() {
-  const { files, currentFile } = useMarkdownStore();
-
-  const handleFileSelect = (file) => {
-    useMarkdownStore.getState().openFile(file);
-  };
+  const { files, currentFile, openFile } = useMarkdownStore();
 
   return (
     <aside className="sidebar">
-      <nav className="sidebar-nav">
-        <ToolbarButton onClick={createNewFile}>
-          <div className="icon">+</div>
-          New
-        </ToolbarButton>
-        <ToolbarButton onClick={saveCurrentFile}>
-          <div className="icon">✓</div>
-          Save
-        </ToolbarButton>
-      </nav>
-
       <div className="file-tree">
         {files.length === 0 ? (
-          <div className="empty-message">No files in current folder</div>
+          <p className="empty-message">Open a file to get started</p>
         ) : (
-          files.map(({ name, path }) => (
-            <div key={path} className="folder-item">
-              <div className="folder-name">{name}</div>
-              <div className="folder-content">
-                {currentFile === null ? (
-                  files.flat()?.map((file) => (
-                    <FileItem key={file.path} file={file} />
-                  ))
-                ) : (
-                  <div className="inline-file">
-                    <FileIcon />
-                    {currentFile.name}
-                  </div>
-                )}
-              </div>
+          files.map((file) => (
+            <div
+              key={file.path}
+              className={`file-item${currentFile?.path === file.path ? ' active' : ''}`}
+              onClick={() => openFile(file)}
+            >
+              <span>📄</span>
+              <span>{file.name}</span>
             </div>
           ))
         )}
@@ -47,18 +24,3 @@ export default function FileBrowser() {
     </aside>
   );
 }
-
-function FileItem({ file }) {
-  return (
-    <div className="file-item" onClick={() => handleFileSelect(file)}>
-      <FileIcon />
-      <span>{file.name}</span>
-    </div>
-  );
-}
-
-function FileIcon() {
-  return <div className="file-icon">📄</div>;
-}
-
-export { FileBrowser, FileItem };

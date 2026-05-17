@@ -1,102 +1,45 @@
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useMarkdownStore } from '../store/useMarkdownStore';
-import { Edit, Eye } from 'lucide-react';
 
 export default function MarkdownView() {
-  const { currentFile, isPreviewOpen, isDarkMode, fontSize, fontFamily } = useMarkdownStore();
-  const { isSynced } = useMarkdownStore();
+  const { currentFile, content, updateContent, isPreviewOpen, togglePreview } = useMarkdownStore();
 
-  if (!currentFile) return null;
-
-  return (
-    <>
-      <div className={`markdown-editor ${isDarkMode ? 'dark' : 'light'}`, [
-        { '--font-size': fontSize },
-        { '--font-family': fontFamily },
-      ]}>
-        <Toolbar
-          onSave={() => {
-            currentFile.save();
-            useMarkdownStore.getState().isSynced;
-          }}
-          isConnected={useMarkdownStore.getState().isCloudConnected}
-          showCloudFiles={useMarkdownStore.getState().cloudFiles}
-        />
-        
-        <Sidebar>
-          <FileBrowser
-            onSelect={currentFile}
-            onAddFile={() => window.showNewFileDialog()}
-          />
-        </Sidebar>
-
-        {isPreviewOpen && (
-          <Preview
-            preview={currentFile}
-            isEditable={true}
-          />
-        )}
+  if (!currentFile) {
+    return (
+      <div className="editor-area" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
+          <h2>Welcome to Markdown Editor</h2>
+          <p>Click <strong>📂 Open</strong> in the toolbar to open a .md file.</p>
+        </div>
       </div>
+    );
+  }
 
-      {isSynced && typeof window !== 'undefined' && (
-        <Toast>File synced to Dropbox</Toast>
+  return (
+    <div className="editor-area">
+      <div className="editor-panel">
+        <div className="editor-panel-header">
+          <span className="file-title">{currentFile.name}</span>
+          <button className="toolbar-button preview-toggle" onClick={togglePreview}>
+            {isPreviewOpen ? '✏️ Hide Preview' : '👁 Show Preview'}
+          </button>
+        </div>
+        <textarea
+          className="editor-textarea"
+          value={content}
+          onChange={(e) => updateContent(e.target.value)}
+          placeholder="Start writing Markdown..."
+          spellCheck={false}
+        />
+      </div>
+      {isPreviewOpen && (
+        <div className="preview markdown-editor">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {content || '*Nothing to preview yet.*'}
+          </ReactMarkdown>
+        </div>
       )}
-    </>
-  );
-}
-
-function Sidebar({ children }) {
-  return <aside className="sidebar">{children}</aside>;
-}
-
-function FileBrowser({ onSelect, onAddFile }) {
-  const { currentFile, files } = useMarkdownStore();
-  
-  const handleFileSelect = (file) => {
-    window.showOpenDialog({ filePath: file.path });
-  };
-
-  return (
-    <aside className="file-browser">
-      <h3>Files</h3>
-      <ul className="file-list">
-        <li className="file-item" onClick={onAddFile}>
-          + New
-        </li>
-        {files.map((file) => (
-          <li
-            key={file.path}
-            className={`file-item ${currentFile === file ? 'active' : ''}`}
-            onClick={() => handleFileSelect(file)}
-          >
-            <FileIcon type={file.type === 'directory' ? 'folder' : 'file'} />
-            {file.name}
-          </li>
-        ))}
-      </ul>
-    </aside>
-  );
-}
-
-function Preview({ preview }) {
-  const { currentFile, updatePreview } = useMarkdownStore();
-
-  return (
-    <section className="preview">
-      <PreviewToolbar />
-      <iframe
-        srcDoc={currentFile}
-        title="preview"
-      />
-    </section>
-  );
-}
-
-function PreviewToolbar() {
-  return (
-    <nav className="preview-toolbar">
-      <ToolbarButton onClick={window.updatePreview}>
-        <Eye size={18} />
-      </ToolbarButton>
-    </nav>
+    </div>
   );
 }

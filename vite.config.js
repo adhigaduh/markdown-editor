@@ -1,24 +1,23 @@
 import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+  plugins: [react()],
   root: '.',
   publicDir: 'public',
   build: {
     outDir: 'dist',
     sourcemap: true,
-    minify: 'terser',
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'zustand'],
-          editor: ['react-markdown', 'remark-gfm', 'remark-math'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', 'lucide-react']
-        }
-      }
-    }
+          markdown: ['react-markdown', 'remark-gfm'],
+        },
+      },
+    },
   },
   server: {
     port: 5173,
-    allowCors: true
-  }
+  },
 });
