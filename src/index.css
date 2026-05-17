@@ -1,0 +1,165 @@
+:root {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: var(--font-size, 16px);
+  line-height: var(--line-height, 1.6);
+}
+body {
+  margin: 0;
+  padding: 0;
+  background: #1a1a1a;
+  color: #e0e0e0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: #252525;
+  border-bottom: 1px solid #333;
+  gap: 8px;
+}
+
+.toolbar-group {
+  display: flex;
+  gap: 4px;
+  padding-left: 8px;
+  border-left: 1px solid #333;
+}
+
+.toolbar-button {
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid #333;
+  border-radius: 4px;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toolbar-button:hover {
+  background: #333;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  background: #2d2d2d;
+  border-bottom: 1px solid #3d3d3d;
+  gap: 8px;
+}
+
+.editor-container {
+  display: flex;
+  height: calc(100vh - 40px);
+}
+
+.sidebar {
+  width: 250px;
+  background: #1e1e1e;
+  padding: 12px;
+  border-right: 1px solid #3d3d3d;
+}
+
+.file-browser {
+  min-height: calc(100vh - 60px);
+}
+
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.file-item {
+  padding: 6px 8px;
+  margin: 2px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #a0a0a0;
+}
+
+.file-item:hover {
+  background: #2d2d2d;
+}
+
+.file-item.active {
+  background: #1976d2;
+  color: white;
+}
+
+.editor-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.editor-panel {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+  background: #1e1e1e;
+}
+
+.preview {
+  border-left: 1px solid #3d3d3d;
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: #252525;
+}
+
+.markdown-editor h1 {
+  font-size: var(--font-size, 16px) * 2;
+  margin-bottom: 24px;
+}
+
+.markdown-editor h2 {
+  font-size: var(--font-size, 16px) * 1.75;
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+
+.markdown-editor code {
+  background: #2d2d2d;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Consolas', monospace;
+}
+
+.markdown-editor pre {
+  background: #1a1a1a;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.markdown-editor blockquote {
+  border-left-color: #3d3d3d;
+  margin-left: 0;
+  padding-left: 16px;
+}
+
+.markdown-editor ul,
+.markdown-editor ol {
+  padding-left: 24px;
+}
+
+.markdown-editor table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.markdown-editor th,
+.markdown-editor td {
+  border: 1px solid #3d3d3d;
+  padding: 8px 12px;
+}
+
+.markdown-editor img {
+  max-width: 100%;
+  border-radius: 8px;
+}
