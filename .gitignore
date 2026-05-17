@@ -4,3 +4,4 @@ dev.log
 dev.err
 *.local
 .env
+.superpowers/
