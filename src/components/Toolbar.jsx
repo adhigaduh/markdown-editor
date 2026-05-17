@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { useMarkdownStore } from '../store/useMarkdownStore';
 
 export default function Toolbar() {
-  const { saveFile, toggleDarkMode, isDarkMode, isDirty, openFile, addFile } = useMarkdownStore();
+  const { saveFile, toggleDarkMode, isDarkMode, isDirty, openFile, addFile, currentFile, closeFile } = useMarkdownStore();
   const fileInputRef = useRef(null);
 
   const handleFileOpen = (e) => {
@@ -33,9 +33,14 @@ export default function Toolbar() {
         </button>
       </div>
       <div className="toolbar-group">
-        <button className="toolbar-button" onClick={saveFile}>
+        <button className="toolbar-button" onClick={saveFile} disabled={!currentFile}>
           💾 Save{isDirty ? ' *' : ''}
         </button>
+        {currentFile && (
+          <button className="toolbar-button" onClick={closeFile}>
+            ✕ Close
+          </button>
+        )}
       </div>
       <div className="toolbar-group">
         <button className="toolbar-button" onClick={toggleDarkMode}>

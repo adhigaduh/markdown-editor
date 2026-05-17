@@ -45,6 +45,16 @@ export const useMarkdownStore = create((set, get) => ({
     set({ isDirty: false });
   },
 
+  closeFile: () => {
+    const { currentFile, files } = get();
+    set({
+      currentFile: null,
+      content: '',
+      isDirty: false,
+      files: currentFile ? files.filter((f) => f.path !== currentFile.path) : files,
+    });
+  },
+
   togglePreview: () => {
     set((state) => ({ isPreviewOpen: !state.isPreviewOpen }));
   },

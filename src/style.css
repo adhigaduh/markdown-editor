@@ -1,5 +1,5 @@
 :root {
-  background: #1e1e1e;
+  background: var(--bg-primary);
 }
 
 * { box-sizing: border-box; }
@@ -8,7 +8,7 @@ body {
   margin: 0;
   padding: 0;
   font-family: system-ui, -apple-system, sans-serif;
-  background: #1e1e1e;
+  background: var(--bg-primary);
 }
 
 .app { display: flex; flex-direction: column; height: 100vh; }
@@ -18,18 +18,18 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 8px 16px;
-  background: #252525;
-  border-bottom: 1px solid #333;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
 }
 
-.logo h1 { margin: 0; color: #e0e0e0; }
+.logo h1 { margin: 0; color: var(--text-primary); }
 
 .toolbar {
   display: flex;
   align-items: center;
   padding: 8px 16px;
-  background: #252525;
-  border-bottom: 1px solid #333;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
   gap: 8px;
 }
 
@@ -37,17 +37,17 @@ body {
 
 .toolbar-button {
   background: transparent;
-  border: 1px solid #333;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  color: #e0e0e0;
+  color: var(--text-primary);
   padding: 8px 16px;
   cursor: pointer;
   margin: 0 4px;
 }
 
 .toolbar-button:hover {
-  background: #1976d2;
-  border-color: #1976d2;
+  background: var(--accent-color);
+  border-color: var(--accent-color);
   color: white;
 }
 
@@ -68,7 +68,7 @@ body {
 }
 
 .welcome-screen h2 { font-size: 28px; margin-bottom: 16px; }
-.welcome-screen p { color: #a0a0a0; max-width: 600px; margin: 8px 0; }
+.welcome-screen p { color: var(--text-secondary); max-width: 600px; margin: 8px 0; }
 
 .editor-container {
   display: flex;
@@ -85,7 +85,7 @@ body {
 
 .preview-section {
   flex: 1;
-  background: #1a1a1a;
+  background: var(--bg-secondary);
   padding: 20px;
   overflow-y: auto;
 }
@@ -96,7 +96,7 @@ body {
 .preview h2 { font-size: 1.5em; margin: 20px 0 12px; }
 .preview p { margin: 8px 0; line-height: 1.7; }
 .preview code {
-  background: #2d2d2d;
+  background: var(--bg-primary);
   padding: 4px 8px;
   border-radius: 4px;
   font-family: 'Consolas', monospace;
@@ -107,16 +107,16 @@ body {
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .cloud-status {
   margin-top: 20px;
   padding: 20px;
-  background: #252525;
+  background: var(--bg-secondary);
   border-radius: 8px;
-  border: 1px solid #3d3d3d;
+  border: 1px solid var(--border-color);
 }
 
 .cloud-status h3 { margin: 0 0 8px; color: #4caf50; }
-.cloud-status p { margin: 0; color: #a0a0a0; }
+.cloud-status p { margin: 0; color: var(--text-secondary); }
