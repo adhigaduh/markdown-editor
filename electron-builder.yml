@@ -1,0 +1,42 @@
+appId: com.adhigaduh.markdown-editor
+productName: Markdown Editor
+copyright: Copyright © 2026
+
+directories:
+  output: release
+
+files:
+  - dist/**/*
+  - electron/**/*
+  - package.json
+  - node_modules/**/*
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  artifactName: MarkdownEditor-Setup-${version}.exe
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Markdown Editor
+
+fileAssociations:
+  - ext: md
+    name: Markdown File
+    description: Open with Markdown Editor
+    role: Editor
+  - ext: markdown
+    name: Markdown File
+    description: Open with Markdown Editor
+    role: Editor
+
+publish:
+  provider: github
+  owner: adhigaduh
+  repo: markdown-editor
