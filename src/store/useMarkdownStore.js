@@ -1,20 +1,21 @@
 import { create } from 'zustand';
 
+const isElectron =
+  typeof window !== 'undefined' && typeof window.electronAPI !== 'undefined';
+
 export const useMarkdownStore = create((set, get) => ({
+  // File state
   currentFile: null,
   content: '',
   files: [],
-  isPreviewOpen: true,
-  isDarkMode: true,
   isDirty: false,
-  isSynced: false,
-  fontSize: 16,
-  fontFamily: 'system-ui',
-  cloudProvider: 'dropbox',
-  cloudToken: null,
-  isCloudConnected: false,
-  cloudFiles: [],
-  lastSyncTime: null,
+
+  // UI state
+  theme: 'night',
+  isSidebarOpen: true,
+  activeSidebarPanel: 'files',
+  isFocusMode: false,
+  isSourceMode: false,
 
   openFile: (file) => {
     set({ currentFile: file, content: file.content || '', isDirty: false });
@@ -29,45 +30,48 @@ export const useMarkdownStore = create((set, get) => ({
   },
 
   updateContent: (content) => {
-    set({ content, isDirty: true, isSynced: false });
+    set({ content, isDirty: true });
   },
 
-  saveFile: () => {
+  saveFile: async () => {
     const { currentFile, content } = get();
     if (!currentFile) return;
-    const blob = new Blob([content], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = currentFile.name;
-    a.click();
-    URL.revokeObjectURL(url);
-    set({ isDirty: false });
+    if (isElectron) {
+      await window.electronAPI.saveFile(currentFile.path, content);
+      set({ isDirty: false });
+    } else {
+      const blob = new Blob([content], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = currentFile.name;
+      a.click();
+      URL.revokeObjectURL(url);
+      set({ isDirty: false });
+    }
   },
 
-  closeFile: () => {
-    const { currentFile, files } = get();
-    set({
-      currentFile: null,
-      content: '',
-      isDirty: false,
-      files: currentFile ? files.filter((f) => f.path !== currentFile.path) : files,
-    });
+  saveFileAs: async () => {
+    const { content, addFile } = get();
+    if (isElectron) {
+      const result = await window.electronAPI.saveFileAs(content);
+      if (result) {
+        const fileWithContent = { ...result, content };
+        addFile(fileWithContent);
+        set({ currentFile: result, isDirty: false });
+      }
+    } else {
+      get().saveFile();
+    }
   },
 
-  togglePreview: () => {
-    set((state) => ({ isPreviewOpen: !state.isPreviewOpen }));
-  },
+  toggleSidebar: () => set((s) => ({ isSidebarOpen: !s.isSidebarOpen })),
+  toggleFocusMode: () => set((s) => ({ isFocusMode: !s.isFocusMode })),
+  toggleSourceMode: () => set((s) => ({ isSourceMode: !s.isSourceMode })),
+  setTheme: (theme) => set({ theme }),
+  setSidebarPanel: (panel) => set({ activeSidebarPanel: panel }),
 
-  toggleDarkMode: () => {
-    set((state) => ({ isDarkMode: !state.isDarkMode }));
-  },
-
-  connectCloud: () => {
-    console.log('Dropbox OAuth not yet implemented');
-  },
-
-  disconnectCloud: () => {
-    set({ cloudToken: null, isCloudConnected: false, cloudFiles: [] });
-  },
+  // Legacy compat — used by Toolbar.jsx in browser mode
+  toggleDarkMode: () =>
+    set((s) => ({ theme: s.theme === 'night' ? 'github' : 'night' })),
 }));
