@@ -27,8 +27,11 @@ A Typora-like Markdown editor with cloud sync (Dropbox integration). Built with 
 # Install dependencies
 npm install
 
-# Start development server
+# Start development server (browser)
 npm run dev
+
+# Start with Electron
+npm run dev:electron
 
 # Build for production
 npm run build
@@ -36,6 +39,46 @@ npm run build
 # Preview built app
 npm run preview
 ```
+
+## Building the Windows Installer
+
+```bash
+npm run dist
+```
+
+Produces `release/Markdown Editor Setup 1.0.0.exe` — an NSIS installer that:
+- Adds the app to Start Menu and Desktop
+- Registers `.md` and `.markdown` as default-open with this app
+- Supports pinning to the taskbar
+
+> **Note:** The installer is unsigned. Windows SmartScreen will show a warning on first run — click **More info → Run anyway**.
+
+### Required patch after `npm install`
+
+`electron-builder` downloads a signing toolchain (`winCodeSign`) that contains macOS symlinks. On Windows without Developer Mode enabled, 7-Zip fails to create those symlinks (exit code 2) and aborts the build.
+
+**Fix:** after every `npm install`, open `node_modules/builder-util/out/util.js` and find the `handleProcess` callback inside `runCommand` (search for `error.alreadyLogged = true`). Replace it:
+
+```js
+// BEFORE
+handleProcess("close", childProcess, command, resolve, error => {
+    if (error instanceof ExecError && error.exitCode === 2) {
+        error.alreadyLogged = true;
+    }
+    reject(error);
+});
+
+// AFTER
+handleProcess("close", childProcess, command, resolve, error => {
+    if (error instanceof ExecError && error.exitCode === 2) {
+        resolve(undefined); // macOS symlink failures are non-fatal on Windows
+        return;
+    }
+    reject(error);
+});
+```
+
+**Alternative:** Enable **Windows Developer Mode** (Settings → System → For Developers → Developer Mode) — this grants symlink creation rights and the patch is no longer needed.
 
 ## Project Structure
 
