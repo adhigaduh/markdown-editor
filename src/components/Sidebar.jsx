@@ -9,6 +9,7 @@ export default function Sidebar() {
   const isSidebarOpen = useMarkdownStore((s) => s.isSidebarOpen);
   const activeSidebarPanel = useMarkdownStore((s) => s.activeSidebarPanel);
   const openFile = useMarkdownStore((s) => s.openFile);
+  const closeFile = useMarkdownStore((s) => s.closeFile);
   const setSidebarPanel = useMarkdownStore((s) => s.setSidebarPanel);
 
   const outline = useMemo(() => extractOutline(content), [content]);
@@ -45,6 +46,13 @@ export default function Sidebar() {
               >
                 <span className="sidebar-file-icon">📄</span>
                 <span className="sidebar-file-name">{file.name}</span>
+                <button
+                  className="sidebar-file-close"
+                  onClick={(e) => { e.stopPropagation(); closeFile(file.path); }}
+                  title="Close"
+                >
+                  ✕
+                </button>
               </div>
             ))
           )

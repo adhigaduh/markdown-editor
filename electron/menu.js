@@ -39,12 +39,15 @@ function buildMenu(win, getRecentFiles) {
           accelerator: 'CmdOrCtrl+Shift+S',
           click: () => send('file:save-as'),
         },
+        {
+          label: 'Close File',
+          accelerator: 'CmdOrCtrl+W',
+          click: () => send('file:close'),
+        },
         { type: 'separator' },
         {
           label: 'Recent Files',
-          get submenu() {
-            return recentFilesSubmenu();
-          },
+          submenu: recentFilesSubmenu(),
         },
         { type: 'separator' },
         { label: 'Exit', accelerator: 'Alt+F4', role: 'quit' },

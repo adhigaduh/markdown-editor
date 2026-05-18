@@ -17,6 +17,16 @@ export const useMarkdownStore = create((set, get) => ({
   isFocusMode: false,
   isSourceMode: false,
 
+  newFile: () => {
+    const { files } = get();
+    const existing = new Set(files.map((f) => f.name));
+    let name = 'Untitled.md';
+    let i = 2;
+    while (existing.has(name)) name = `Untitled-${i++}.md`;
+    const file = { path: `__new__/${name}`, name, content: '' };
+    set((s) => ({ files: [...s.files, file], currentFile: file, content: '', isDirty: false }));
+  },
+
   openFile: (file) => {
     set({ currentFile: file, content: file.content || '', isDirty: false });
   },
@@ -36,6 +46,7 @@ export const useMarkdownStore = create((set, get) => ({
   saveFile: async () => {
     const { currentFile, content } = get();
     if (!currentFile) return;
+    if (currentFile.path.startsWith('__new__/')) return get().saveFileAs();
     if (isElectron) {
       await window.electronAPI.saveFile(currentFile.path, content);
       set({ isDirty: false });
@@ -62,6 +73,24 @@ export const useMarkdownStore = create((set, get) => ({
       }
     } else {
       get().saveFile();
+    }
+  },
+
+  closeFile: (filePath) => {
+    const { files, currentFile } = get();
+    const idx = files.findIndex((f) => f.path === filePath);
+    if (idx === -1) return;
+    const newFiles = files.filter((f) => f.path !== filePath);
+    if (currentFile?.path === filePath) {
+      const next = newFiles[idx] ?? newFiles[idx - 1] ?? null;
+      set({
+        files: newFiles,
+        currentFile: next,
+        content: next?.content ?? '',
+        isDirty: false,
+      });
+    } else {
+      set({ files: newFiles });
     }
   },
 

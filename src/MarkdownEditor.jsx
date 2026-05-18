@@ -16,15 +16,22 @@ export default function MarkdownEditor() {
   const currentFile = useMarkdownStore((s) => s.currentFile);
   const content = useMarkdownStore((s) => s.content);
   const {
+    newFile,
     openFile,
     addFile,
     saveFile,
     saveFileAs,
+    closeFile,
     toggleSidebar,
     toggleFocusMode,
     toggleSourceMode,
     setTheme,
   } = useMarkdownStore();
+
+  // Expose store for Playwright testing in dev mode
+  useEffect(() => {
+    if (import.meta.env.DEV) window.__store = useMarkdownStore;
+  }, []);
 
   // Apply theme and focus mode to <html>
   useEffect(() => {
@@ -35,9 +42,18 @@ export default function MarkdownEditor() {
   // Keyboard shortcuts (browser mode — Electron uses native menu)
   useEffect(() => {
     const handleKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault();
+        newFile();
+      }
       if ((e.ctrlKey || e.metaKey) && e.key === 's') {
         e.preventDefault();
         saveFile();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'w') {
+        e.preventDefault();
+        const cur = useMarkdownStore.getState().currentFile;
+        if (cur) closeFile(cur.path);
       }
       if ((e.ctrlKey || e.metaKey) && e.key === '/') {
         e.preventDefault();
@@ -52,9 +68,14 @@ export default function MarkdownEditor() {
   useEffect(() => {
     if (!isElectron) return;
     const unsub = window.electronAPI.onMenuEvent(async (event) => {
-      if (event === 'file:open') {
+      if (event === 'file:new') {
+        newFile();
+      } else if (event === 'file:open') {
         const file = await window.electronAPI.openFile();
         if (file) { addFile(file); openFile(file); }
+      } else if (event === 'file:close') {
+        const cur = useMarkdownStore.getState().currentFile;
+        if (cur) closeFile(cur.path);
       } else if (event === 'file:save') {
         saveFile();
       } else if (event === 'file:save-as') {

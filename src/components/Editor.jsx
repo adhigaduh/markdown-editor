@@ -6,6 +6,7 @@ import { history } from '@milkdown/plugin-history';
 import { listener, listenerCtx } from '@milkdown/plugin-listener';
 import { clipboard } from '@milkdown/plugin-clipboard';
 import { useMarkdownStore } from '../store/useMarkdownStore';
+import { tableHardBreakPlugin } from '../plugins/tableHardBreak';
 
 function MilkdownEditor({ defaultValue, onChange }) {
   useEditor((root) =>
@@ -22,6 +23,7 @@ function MilkdownEditor({ defaultValue, onChange }) {
       .use(history)
       .use(listener)
       .use(clipboard)
+      .use(tableHardBreakPlugin)
   );
 
   return <Milkdown />;

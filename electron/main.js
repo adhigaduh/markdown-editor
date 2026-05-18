@@ -13,6 +13,7 @@ const { createTray } = require('./tray');
 const isDev =
   process.env.NODE_ENV === 'development' || !app.isPackaged;
 
+
 const RECENT_FILES_PATH = path.join(
   app.getPath('userData'),
   'recent-files.json'
@@ -21,6 +22,7 @@ const SETTINGS_PATH = path.join(app.getPath('userData'), 'settings.json');
 
 let mainWindow = null;
 let trayObj = null;
+let menu = null;
 
 // ── Recent files ──────────────────────────────────────────────────────────
 
@@ -120,7 +122,7 @@ function createWindow() {
     }
   });
 
-  const menu = buildMenu(mainWindow, loadRecentFiles);
+  menu = buildMenu(mainWindow, loadRecentFiles);
   Menu.setApplicationMenu(menu);
 }
 
@@ -172,6 +174,8 @@ function registerIpcHandlers() {
   });
 
   ipcMain.handle('files:recent', () => loadRecentFiles());
+
+  ipcMain.on('menu:popup', () => menu.popup({ window: mainWindow }));
 
   ipcMain.on('window:minimize', () => mainWindow.minimize());
   ipcMain.on('window:maximize', () => {

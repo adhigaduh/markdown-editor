@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { useMarkdownStore } from '../store/useMarkdownStore';
 
 export default function Toolbar() {
-  const { saveFile, toggleDarkMode, theme, isDirty, openFile, addFile, currentFile } = useMarkdownStore();
+  const { newFile, saveFile, toggleDarkMode, theme, isDirty, openFile, addFile, currentFile } = useMarkdownStore();
   const fileInputRef = useRef(null);
 
   const handleFileOpen = (e) => {
@@ -28,6 +28,9 @@ export default function Toolbar() {
         onChange={handleFileOpen}
       />
       <div className="toolbar-group">
+        <button className="toolbar-button" onClick={newFile}>
+          📄 New
+        </button>
         <button className="toolbar-button" onClick={() => fileInputRef.current?.click()}>
           📂 Open
         </button>

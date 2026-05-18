@@ -2,6 +2,9 @@ node_modules/
 dist/
 dev.log
 dev.err
+server.log
+server.err
+server.out
 *.local
 .env
 .superpowers/

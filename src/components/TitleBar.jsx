@@ -28,6 +28,14 @@ export default function TitleBar() {
         <div className="title-bar-controls">
           <button
             className="title-bar-btn"
+            onClick={() => window.electronAPI.showMenu()}
+            title="Menu"
+            style={{ fontSize: 14 }}
+          >
+            ☰
+          </button>
+          <button
+            className="title-bar-btn"
             onClick={() => window.electronAPI.windowMinimize()}
             title="Minimize"
           >
