@@ -64,6 +64,21 @@ export default function MarkdownEditor() {
     return () => window.removeEventListener('keydown', handleKey);
   }, [saveFile, toggleSourceMode]);
 
+  // Open file passed via argv (double-click .md in Explorer) or second-instance
+  useEffect(() => {
+    if (!isElectron) return;
+    window.electronAPI.getStartupFile().then(async (filePath) => {
+      if (!filePath) return;
+      const file = await window.electronAPI.openFileByPath(filePath);
+      if (file) { addFile(file); openFile(file); }
+    });
+    const unsub = window.electronAPI.onOpenFile(async (filePath) => {
+      const file = await window.electronAPI.openFileByPath(filePath);
+      if (file) { addFile(file); openFile(file); }
+    });
+    return unsub;
+  }, [addFile, openFile]);
+
   // Electron menu event handler
   useEffect(() => {
     if (!isElectron) return;

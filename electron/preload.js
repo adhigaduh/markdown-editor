@@ -34,4 +34,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.on('window:maximize-change', listener);
     return () => ipcRenderer.removeListener('window:maximize-change', listener);
   },
+
+  getStartupFile: () => ipcRenderer.invoke('file:get-startup-file'),
+
+  onOpenFile: (callback) => {
+    const listener = (_, filePath) => callback(filePath);
+    ipcRenderer.on('file:open-argv', listener);
+    return () => ipcRenderer.removeListener('file:open-argv', listener);
+  },
 });

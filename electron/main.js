@@ -23,6 +23,13 @@ const SETTINGS_PATH = path.join(app.getPath('userData'), 'settings.json');
 let mainWindow = null;
 let trayObj = null;
 let menu = null;
+let startupFilePath = null;
+
+function getFileFromArgs(argv) {
+  // In packaged app argv[0] is the exe; in dev argv[0] is node, argv[1] is script.
+  const args = argv.slice(isDev ? 2 : 1);
+  return args.find((a) => /\.(md|markdown|txt)$/i.test(a) && !a.startsWith('-')) || null;
+}
 
 // ── Recent files ──────────────────────────────────────────────────────────
 
@@ -175,6 +182,12 @@ function registerIpcHandlers() {
 
   ipcMain.handle('files:recent', () => loadRecentFiles());
 
+  ipcMain.handle('file:get-startup-file', () => {
+    const f = startupFilePath;
+    startupFilePath = null; // consume once
+    return f;
+  });
+
   ipcMain.on('menu:popup', () => menu.popup({ window: mainWindow }));
 
   ipcMain.on('window:minimize', () => mainWindow.minimize());
@@ -210,14 +223,18 @@ const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
-  app.on('second-instance', () => {
+  app.on('second-instance', (event, commandLine) => {
     if (mainWindow) {
       if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.show();
       mainWindow.focus();
+      const filePath = getFileFromArgs(commandLine);
+      if (filePath) mainWindow.webContents.send('file:open-argv', filePath);
     }
   });
 
   app.whenReady().then(() => {
+    startupFilePath = getFileFromArgs(process.argv);
     createWindow();
     registerIpcHandlers();
     setupAutoUpdater();
