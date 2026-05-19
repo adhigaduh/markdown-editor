@@ -219,6 +219,20 @@ function setupAutoUpdater() {
 
 // ── App lifecycle ─────────────────────────────────────────────────────────
 
+// macOS: fired when the OS asks the app to open a file (double-click, "Open With", etc.)
+// Must be registered before app.whenReady() to catch files opened at launch.
+app.on('open-file', (event, filePath) => {
+  event.preventDefault();
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
+    mainWindow.focus();
+    mainWindow.webContents.send('file:open-argv', filePath);
+  } else {
+    startupFilePath = filePath;
+  }
+});
+
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
@@ -234,7 +248,8 @@ if (!gotTheLock) {
   });
 
   app.whenReady().then(() => {
-    startupFilePath = getFileFromArgs(process.argv);
+    // open-file may have already set startupFilePath before ready; don't overwrite it
+    if (!startupFilePath) startupFilePath = getFileFromArgs(process.argv);
     createWindow();
     registerIpcHandlers();
     setupAutoUpdater();
