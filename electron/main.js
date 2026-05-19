@@ -129,6 +129,10 @@ function createWindow() {
     }
   });
 
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+
   menu = buildMenu(mainWindow, loadRecentFiles);
   Menu.setApplicationMenu(menu);
 }
@@ -229,7 +233,9 @@ app.on('open-file', (event, filePath) => {
     mainWindow.focus();
     mainWindow.webContents.send('file:open-argv', filePath);
   } else {
+    // Window was closed (app still running) or app just launched — open a new window
     startupFilePath = filePath;
+    if (app.isReady()) createWindow();
   }
 });
 
@@ -259,6 +265,11 @@ if (!gotTheLock) {
 
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
+  });
+
+  // macOS: re-open window when clicking dock icon with no windows open
+  app.on('activate', () => {
+    if (!mainWindow) createWindow();
   });
 
   app.on('before-quit', () => {
